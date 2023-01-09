@@ -18,8 +18,7 @@ import microsoft.exchange.webservices.data.search.FolderView;
 import microsoft.exchange.webservices.data.sync.ChangeCollection;
 import microsoft.exchange.webservices.data.sync.FolderChange;
 
-public class MailRequests{
-    private ExchangeService ewsClient = null;
+public class MailRequests extends EwsBaseRequest{
 
     public MailRequests(ExchangeService ewsClientCache){
         ewsClient = ewsClientCache;

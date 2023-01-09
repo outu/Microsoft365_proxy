@@ -7,9 +7,7 @@ import microsoft.exchange.webservices.data.core.service.item.EmailMessage;
 import microsoft.exchange.webservices.data.core.service.schema.ItemSchema;
 import microsoft.exchange.webservices.data.property.complex.ItemId;
 
-public class TaskRequests{
-    private ExchangeService ewsClient = null;
-
+public class TaskRequests extends EwsBaseRequest{
     public TaskRequests(ExchangeService ewsClientCache){
         ewsClient = ewsClientCache;
     }

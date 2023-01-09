@@ -16,7 +16,7 @@ import java.util.Objects;
 import static apis.BaseUtil.RegionEnum.LOCAL;
 
 public class EwsBaseRequest extends BaseRequest {
-    private ExchangeService ewsClient;
+    protected ExchangeService ewsClient;
     private String tokenEndPoint = null;
     private int region = 0;
     private Map<String, String> authParameters;
@@ -25,8 +25,10 @@ public class EwsBaseRequest extends BaseRequest {
 
     }
 
-    public EwsBaseRequest(int regionParam, Map<String, String> organizationRegionAuthParameters){
-        switch (BaseUtil.RegionEnum.getRegionEnumByRegion(regionParam)){
+    public EwsBaseRequest(Map<String, String> organizationRegionAuthParameters){
+        region = Integer.parseInt(organizationRegionAuthParameters.get("region"));
+
+        switch (BaseUtil.RegionEnum.getRegionEnumByRegion(region)){
             case  GLOBALCLOUD:
                 tokenEndPoint = "https://outlook.office365.com/EWS/Exchange.asmx";
                 break;
@@ -41,7 +43,6 @@ public class EwsBaseRequest extends BaseRequest {
                 break;
         }
 
-        region = regionParam;
         authParameters = organizationRegionAuthParameters;
     }
 
