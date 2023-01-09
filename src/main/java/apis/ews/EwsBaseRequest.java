@@ -62,7 +62,7 @@ public class EwsBaseRequest extends BaseRequest {
 
                 ewsClient = service;
             } else {
-                initAuthParameters(authParameters);
+                initAuthParameters(BaseUtil.ApiTypeEnum.EWSAPI, authParameters);
                 String token = getAccessToken();
                 ExchangeService service = new ExchangeService();
                 service.setUrl(new URI(tokenEndPoint));

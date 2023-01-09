@@ -29,7 +29,7 @@ public class BaseRequest {
     private ConfidentialClientApplication app;
 
 
-    protected void initAuthParameters(Map<String, String> authParameters){
+    protected void initAuthParameters(BaseUtil.ApiTypeEnum apiType, Map<String, String> authParameters){
         appUuid     = authParameters.get("appUuid");
         appSecret   = authParameters.get("appSecret");
         appCertInfo = authParameters.get("appCertInfo");
@@ -40,11 +40,16 @@ public class BaseRequest {
         String tenantUuid = authParameters.get("tenantUuid");
 
         BaseUtil.RegionEnum regionEnum = BaseUtil.RegionEnum.getRegionEnumByRegion(Integer.valueOf(region));
+
         if(regionEnum != null){
             switch (regionEnum){
                 case GLOBALCLOUD:
                     instance = "https://login.microsoftonline.com/" + tenantUuid + "/";
-                    scope = "https://outlook.office365.com/.default";
+                    if (apiType == BaseUtil.ApiTypeEnum.EWSAPI){
+                        scope = "https://outlook.office365.com/.default";
+                    } else {
+                        scope = "https://graph.microsoft.com/.default";
+                    }
                     break;
                 case CHINACLOUD:
                     instance = "https://login.chinacloudapi.cn/" + tenantUuid + "/";

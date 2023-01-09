@@ -1,6 +1,33 @@
 package apis;
 
 public class BaseUtil {
+    public enum ApiTypeEnum {
+        EWSAPI(0),
+        GRAPHAPI(1);
+        private int apiType = 0;
+
+        private ApiTypeEnum(int value) {
+            apiType = value;
+        }
+
+
+        private int getCode() {
+            return apiType;
+        }
+
+        public static ApiTypeEnum getApiEnumByApiType(int apiType) {
+            for (ApiTypeEnum apiEnum : ApiTypeEnum.values()) {
+                if (apiEnum.getCode() == apiType) {
+                    return apiEnum;
+                }
+            }
+
+            return null;
+        }
+
+    }
+
+
     public enum RegionEnum{
         GLOBALCLOUD(0),
         CHINACLOUD(1),

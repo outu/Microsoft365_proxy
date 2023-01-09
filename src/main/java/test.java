@@ -1,5 +1,7 @@
 import apis.ews.EwsBaseRequest;
 import apis.ews.MailRequests;
+import apis.graph.GraphBaseRequest;
+import apis.graph.common.UserRequests;
 import microsoft.exchange.webservices.data.core.ExchangeService;
 import microsoft.exchange.webservices.data.core.enumeration.property.WellKnownFolderName;
 
@@ -12,7 +14,7 @@ public class test {
 
     public static void main(String[] args) throws Exception {
 
-        testEwsConnectExchangeServer();
+        testGraphConnectExchangeOnline();
     }
 
 
@@ -59,9 +61,25 @@ public class test {
     }
 
 
-    private int testGraphConnectExchangeOnline()
-    {
+    private static int testGraphConnectExchangeOnline() throws Exception {
         int ret = 0;
+
+        Properties properties = new Properties();
+        properties.load(Thread.currentThread().getContextClassLoader().getResourceAsStream("application.properties"));
+
+        Map<String, String> organizationAuthParameters = new HashMap<String, String>();
+
+        organizationAuthParameters.put("tenantUuid", properties.getProperty("tenantUuid"));
+        organizationAuthParameters.put("appUuid", properties.getProperty("appUuid"));
+        organizationAuthParameters.put("appSecret", properties.getProperty("appSecret"));
+        organizationAuthParameters.put("appCertInfo", properties.getProperty("appCertInfo"));
+        organizationAuthParameters.put("region", "0");
+        organizationAuthParameters.put("username", properties.getProperty("yunqi@s22fb.onmicrosoft.com"));
+
+        GraphBaseRequest graphBaseRequest = new GraphBaseRequest(organizationAuthParameters);
+        graphBaseRequest.setGraphClient();
+        UserRequests userRequests = new UserRequests(graphBaseRequest.getGraphClient());
+        userRequests.getUserInfoByDeltaLink("");
 
         return ret;
     }
