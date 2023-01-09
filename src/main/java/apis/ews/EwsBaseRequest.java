@@ -10,9 +10,13 @@ import java.net.URI;
 import java.util.Map;
 
 public class EwsBaseRequest extends BaseRequest {
-    public ExchangeService ewsClient = null;
+    protected ExchangeService ewsClient = null;
     private String tokenEndPoint;
     private Map<String, String> authParameters;
+
+    public EwsBaseRequest(){
+
+    }
 
     public EwsBaseRequest(Map<String, String> organizationRegionAuthParameters){
         tokenEndPoint = "https://outlook.office365.com/EWS/Exchange.asmx";
@@ -37,4 +41,10 @@ public class EwsBaseRequest extends BaseRequest {
             e.printStackTrace();
         }
     }
+
+
+//    public ExchangeService getEwsClient()
+//    {
+//        return ewsClient;
+//    }
 }
