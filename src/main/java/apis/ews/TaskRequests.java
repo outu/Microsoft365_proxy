@@ -1,12 +1,18 @@
 package apis.ews;
 
+import microsoft.exchange.webservices.data.core.ExchangeService;
 import microsoft.exchange.webservices.data.core.PropertySet;
 import microsoft.exchange.webservices.data.core.enumeration.property.BasePropertySet;
 import microsoft.exchange.webservices.data.core.service.item.EmailMessage;
 import microsoft.exchange.webservices.data.core.service.schema.ItemSchema;
 import microsoft.exchange.webservices.data.property.complex.ItemId;
 
-public class TaskRequests extends EwsBaseRequest{
+public class TaskRequests{
+    private ExchangeService ewsClient = null;
+
+    public TaskRequests(ExchangeService ewsClientCache){
+        ewsClient = ewsClientCache;
+    }
     public byte[] getStructContent(String taskId) throws Exception {
         taskId = taskId.replace("-", "/");
         taskId = taskId.replace("_", "+");

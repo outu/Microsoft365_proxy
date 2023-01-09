@@ -1,4 +1,4 @@
 package apis.ews;
 
-public class ContactRequests extends EwsBaseRequest{
+public class ContactRequests{
 }

@@ -1,5 +1,5 @@
 package apis.ews;
 
-public class EventRequests extends EwsBaseRequest{
+public class EventRequests{
 
 }
