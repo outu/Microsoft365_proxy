@@ -14,11 +14,11 @@ public class test {
 
     public static void main(String[] args) throws Exception {
 
-        testGraphConnectExchangeOnline();
+        testEwsConnectExchangeOnline();
     }
 
 
-    private int testEwsConnectExchangeOnline() throws Exception {
+    private static int testEwsConnectExchangeOnline() throws Exception {
         int ret = 0;
 
         Properties properties = new Properties();
