@@ -4,6 +4,7 @@ import apis.graph.GraphBaseRequest;
 import apis.graph.common.UserRequests;
 import apis.powershell.PowershellExchangeOperation;
 import apis.soap.SoapBaseRequest;
+import apis.soap.XmlRequestData;
 import microsoft.exchange.webservices.data.core.ExchangeService;
 import microsoft.exchange.webservices.data.core.enumeration.property.WellKnownFolderName;
 import org.apache.http.HttpEntity;
@@ -48,36 +49,11 @@ public class test {
         soapClientCache.add(httpContextMap);
 
         apis.soap.MailRequests mailRequests = new apis.soap.MailRequests(soapClientCache);
-        String testMessage =
-                "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-                        "<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:m=\"http://schemas.microsoft.com/exchange/services/2006/messages\" xmlns:t=\"http://schemas.microsoft.com/exchange/services/2006/types\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n" +
-                        "<soap:Header>\n" +
-                        "<t:RequestServerVersion Version=\"Exchange2007_SP1\" />\n" +
-                        "<t:TimeZoneContext>\n" +
-                        "<t:TimeZoneDefinition Id=\"China Standard Time\" />\n" +
-                        "</t:TimeZoneContext>\n" +
-                        "<t:ExchangeImpersonation>\n" +
-                        "<t:ConnectingSID>\n" +
-                        "<t:PrimarySmtpAddress>test1@exch.com.cn</t:PrimarySmtpAddress>\n" +
-                        "</t:ConnectingSID>\n" +
-                        "</t:ExchangeImpersonation>\n" +
-                        "</soap:Header>\n" +
-                        "<soap:Body>\n" +
-                        "<m:GetItem>\n" +
-                        "<m:ItemShape>\n" +
-                        "<t:BaseShape>AllProperties</t:BaseShape>\n" +
-                        "<t:AdditionalProperties>\n" +
-                        "<t:FieldURI FieldURI=\"item:MimeContent\" />\n" +
-                        "</t:AdditionalProperties>\n" +
-                        "</m:ItemShape>\n" +
-                        "<m:ItemIds>\n" +
-                        "<t:ItemId Id=\"AQMkAGJkZmFlNGJkLWM0NjEtNDU4Zi04NzhmLTNhNWE3OWYxMDFkOABGAAAD/21pFKhtgUqKvYTQLkeOAAcAqbn2gdfe6UikHCgMkkbpBQAAAgEPAAAAqbn2gdfe6UikHCgMkkbpBQAAAhjdAAAA\" />\n" +
-                        "</m:ItemIds>\n" +
-                        "</m:GetItem>\n" +
-                        "</soap:Body>\n" +
-                        "</soap:Envelope>\n";
+        XmlRequestData xmlRequestData = new XmlRequestData();
+        String xmlToGetMailMessage = xmlRequestData.buildXmlToGetMailMimeContent("test1@exch.com.cn", "AQMkAGJkZmFlNGJkLWM0NjEtNDU4Zi04NzhmLTNhNWE3OWYxMDFkOABGAAAD/21pFKhtgUqKvYTQLkeOAAcAqbn2gdfe6UikHCgMkkbpBQAAAgEPAAAAqbn2gdfe6UikHCgMkkbpBQAAAhjdAAAA");
 
-        HttpResponse httpResponse = mailRequests.getResponseWithMimeContent(testMessage);
+
+        HttpResponse httpResponse = mailRequests.getResponseWithMimeContent(xmlToGetMailMessage);
         if(httpResponse.getStatusLine().getStatusCode() == 200){
             HttpEntity entity1 = httpResponse.getEntity();
 
@@ -110,15 +86,6 @@ public class test {
         return ret;
     }
 
-    private static byte[] getBytes(char[] chars){
-        Charset cs = Charset.forName("GBK");
-        CharBuffer cb = CharBuffer.allocate(chars.length);
-        cb.put(chars);
-        cb.flip();
-        ByteBuffer bb = cs.encode(cb);
-
-        return bb.array();
-    }
 
     private static byte[] toBytes(char[] chars) {
         CharBuffer charBuffer = CharBuffer.wrap(chars);
