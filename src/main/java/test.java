@@ -2,6 +2,7 @@ import apis.ews.EwsBaseRequest;
 import apis.ews.MailRequests;
 import apis.graph.GraphBaseRequest;
 import apis.graph.common.UserRequests;
+import apis.powershell.PowershellExchangeOperation;
 import microsoft.exchange.webservices.data.core.ExchangeService;
 import microsoft.exchange.webservices.data.core.enumeration.property.WellKnownFolderName;
 
@@ -14,7 +15,23 @@ public class test {
 
     public static void main(String[] args) throws Exception {
 
-        testEwsConnectExchangeOnline();
+        testPowershell();
+    }
+
+
+    private static int testPowershell() throws IOException {
+        int ret = 0;
+
+        Map<String, String> organizationAuthParameters = new HashMap<String, String>();
+        organizationAuthParameters.put("username", "Administrator@exch.com.cn");
+        organizationAuthParameters.put("password", "backup@1234567890");
+        organizationAuthParameters.put("protocol", "http");
+        organizationAuthParameters.put("domain", "WIN-TT7P7PN7QHJ.exch.com.cn");
+        PowershellExchangeOperation powershellExchangeOperation = new PowershellExchangeOperation(organizationAuthParameters);
+        String userInfo = powershellExchangeOperation.getUserInfo();
+        System.out.printf(userInfo);
+
+        return  ret;
     }
 
 
@@ -36,7 +53,8 @@ public class test {
 
 
         MailRequests mailRequests = new MailRequests(ewsBaseRequest.getEwsClient());
-        mailRequests.getMimeContent("AAMkAGVjYmJjMjY5LTE4OTQtNGExNi05Y2QwLTQyNWUzM2JkNThlMABGAAAAAADNEftcr0zeRrNKdNRVtg8hBwBEsbCet_yGTbX1M-Wcb6tPAAAAAAEMAABEsbCet_yGTbX1M-Wcb6tPAABJVFvNAAA=");
+        //mailRequests.getMailRootFolder();
+        mailRequests.getMimeContent("AAQkADE0ODViMDdkLWQ3MGItNDMyMi1hYzAyLWY0NDlhYTdjMjExMgMkABAAANMFII6LxUqBDnol2Q-6hBAAANMFII6LxUqBDnol2Q-6hA==");
 
 
         return ret;
