@@ -11,7 +11,6 @@ import microsoft.exchange.webservices.data.misc.ImpersonatedUserId;
 
 import java.net.URI;
 import java.util.Map;
-import java.util.Objects;
 
 import static apis.BaseUtil.RegionEnum.LOCAL;
 

@@ -5,8 +5,6 @@ import apis.graph.common.UserRequests;
 import apis.powershell.PowershellExchangeOperation;
 import apis.soap.SoapBaseRequest;
 import apis.soap.XmlRequestData;
-import microsoft.exchange.webservices.data.core.ExchangeService;
-import microsoft.exchange.webservices.data.core.enumeration.property.WellKnownFolderName;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -22,7 +20,7 @@ public class test {
 
     public static void main(String[] args) throws Exception {
 
-        testSoapConnectExchangeServer();
+        testEwsConnectExchangeOnline();
     }
 
 
@@ -131,7 +129,8 @@ public class test {
 
         MailRequests mailRequests = new MailRequests(ewsBaseRequest.getEwsClient());
         //mailRequests.getMailRootFolder();
-        mailRequests.getMimeContent("AAQkADE0ODViMDdkLWQ3MGItNDMyMi1hYzAyLWY0NDlhYTdjMjExMgMkABAAANMFII6LxUqBDnol2Q-6hBAAANMFII6LxUqBDnol2Q-6hA==");
+        System.out.printf(mailRequests.getRootMailFolder());
+       // mailRequests.getMimeContent("AAQkADE0ODViMDdkLWQ3MGItNDMyMi1hYzAyLWY0NDlhYTdjMjExMgMkABAAANMFII6LxUqBDnol2Q-6hBAAANMFII6LxUqBDnol2Q-6hA==");
 
 
         return ret;

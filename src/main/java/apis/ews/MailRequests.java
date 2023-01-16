@@ -1,5 +1,7 @@
 package apis.ews;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import microsoft.exchange.webservices.data.core.ExchangeService;
 import microsoft.exchange.webservices.data.core.PropertySet;
 import microsoft.exchange.webservices.data.core.enumeration.property.BasePropertySet;
@@ -18,11 +20,55 @@ import microsoft.exchange.webservices.data.search.FolderView;
 import microsoft.exchange.webservices.data.sync.ChangeCollection;
 import microsoft.exchange.webservices.data.sync.FolderChange;
 
-public class MailRequests extends EwsBaseRequest{
+import java.util.ArrayList;
+import java.util.List;
 
-    public MailRequests(ExchangeService ewsClientCache){
+public class MailRequests extends EwsBaseRequest implements EwsUtil {
+
+    public MailRequests(ExchangeService ewsClientCache){ 
         ewsClient = ewsClientCache;
     }
+
+
+    public String getRootMailFolder() throws Exception {
+        String rootMailFolderJson = "";
+        List<String> rootMailFolderList = new ArrayList<>();
+
+        Folder folder = Folder.bind(ewsClient, WellKnownFolderName.MsgFolderRoot);
+        FindFoldersResults findFolderResults = folder.findFolders(new FolderView(MAX_ROOT_FOLDER_COUNT));
+
+        for (Folder item : findFolderResults.getFolders()){
+            JsonObject oneRootMailFolder = new JsonObject();
+            oneRootMailFolder.addProperty("folder_id", item.getId().getUniqueId());
+            oneRootMailFolder.addProperty("parent_folder_id", item.getParentFolderId().getUniqueId());
+            oneRootMailFolder.addProperty("display_name", item.getDisplayName());
+            rootMailFolderList.add(oneRootMailFolder.toString());
+        }
+
+        Gson gson = new Gson();
+        rootMailFolderJson = gson.toJson(rootMailFolderList);
+
+        return rootMailFolderJson;
+    }
+
+
+    private String getMailFolderInfo(WellKnownFolderName mailId) throws Exception {
+        String mailFolderInfo = "";
+
+        FolderId folderId = new FolderId(mailId);
+        Folder folder = Folder.bind(ewsClient, folderId);
+
+        JsonObject oneRootMailFolder = new JsonObject();
+        oneRootMailFolder.addProperty("folder_id", folder.getId().getUniqueId());
+        oneRootMailFolder.addProperty("parent_folder_id", folder.getParentFolderId().getUniqueId());
+        oneRootMailFolder.addProperty("display_name", folder.getDisplayName());
+
+        Gson gson = new Gson();
+        mailFolderInfo = gson.toJson(oneRootMailFolder.toString());
+
+        return mailFolderInfo;
+    }
+
 
     public byte[] getMimeContent(String mailId) throws Exception {
         mailId = mailId.replace("-", "/");
@@ -39,21 +85,6 @@ public class MailRequests extends EwsBaseRequest{
         } catch (Exception e){
             throw new Exception(e);
         }
-    }
-
-
-    public String getMailRootFolder() throws Exception {
-        Folder folder = Folder.bind(ewsClient, WellKnownFolderName.MsgFolderRoot);
-        FindFoldersResults findFolderResults = folder.findFolders(new FolderView(30));
-
-        for (Folder item : findFolderResults.getFolders()){
-            System.out.println("****************************");
-            System.out.println(item.getDisplayName());
-            System.out.println(item.getId());
-        }
-
-        return "";
-
     }
 
 

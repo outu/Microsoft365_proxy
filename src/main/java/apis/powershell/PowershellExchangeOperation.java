@@ -42,7 +42,6 @@ public class PowershellExchangeOperation {
                 if (needAnalyze && !readLine.equals("")){
                     String newReadLine = readLine.trim();
                     int lastPosition = newReadLine.lastIndexOf(" ");
-                    System.out.printf(newReadLine + "\r\n");
                     String oneUserName = newReadLine.substring(0, lastPosition);
                     String oneUserMailBox = newReadLine.substring(lastPosition, newReadLine.length());
                     JsonObject oneUserInfo = new JsonObject();
