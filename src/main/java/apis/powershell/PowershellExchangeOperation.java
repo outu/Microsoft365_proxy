@@ -1,5 +1,6 @@
 package apis.powershell;
 
+import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import common.FileOperation;
@@ -36,7 +37,7 @@ public class PowershellExchangeOperation {
         } else {
             String readLine = "";
             boolean needAnalyze = false;
-            List<String> userInfoList = new ArrayList<>();
+            List<JSONObject> userInfoListObject = new ArrayList<>();
 
             while ((readLine = stdout.readLine()) != null) {
                 if (needAnalyze && !readLine.equals("")){
@@ -44,10 +45,10 @@ public class PowershellExchangeOperation {
                     int lastPosition = newReadLine.lastIndexOf(" ");
                     String oneUserName = newReadLine.substring(0, lastPosition);
                     String oneUserMailBox = newReadLine.substring(lastPosition, newReadLine.length());
-                    JsonObject oneUserInfo = new JsonObject();
-                    oneUserInfo.addProperty("username", oneUserName.trim());
-                    oneUserInfo.addProperty("mail", oneUserMailBox.trim());
-                    userInfoList.add(oneUserInfo.toString());
+                    JSONObject oneUserInfo = new JSONObject();
+                    oneUserInfo.put("username", oneUserName.trim());
+                    oneUserInfo.put("mail", oneUserMailBox.trim());
+                    userInfoListObject.add(oneUserInfo);
                 }
 
                 if (readLine.contains("-----------   ------------------")){
@@ -57,8 +58,8 @@ public class PowershellExchangeOperation {
 
             stdout.close();
             FileOperation.deleteTmpFile(getUsersScriptFilePath);
-            Gson gson = new Gson();
-            userInfo = gson.toJson(userInfoList);
+
+            userInfo = userInfoListObject.toString();
 
             return userInfo;
         }
