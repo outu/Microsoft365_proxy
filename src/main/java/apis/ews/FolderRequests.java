@@ -10,7 +10,7 @@ import microsoft.exchange.webservices.data.search.FolderView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FolderRequests extends EwsBaseRequest implements EwsUtil{
+public class FolderRequests extends EwsBaseRequest{
     public FolderRequests(ExchangeService ewsClientCache){
         ewsClient = ewsClientCache;
     }
@@ -26,7 +26,7 @@ public class FolderRequests extends EwsBaseRequest implements EwsUtil{
         List<JSONObject> rootMailFolderListObject = new ArrayList<>();
 
         Folder folder = Folder.bind(ewsClient, WellKnownFolderName.MsgFolderRoot);
-        FindFoldersResults findFolderResults = folder.findFolders(new FolderView(MAX_ROOT_FOLDER_COUNT));
+        FindFoldersResults findFolderResults = folder.findFolders(new FolderView(EwsUtil.MAX_ROOT_FOLDER_COUNT));
 
         for (Folder item : findFolderResults.getFolders()){
             JSONObject oneRootMailFolder = new JSONObject();

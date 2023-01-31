@@ -22,7 +22,7 @@ import microsoft.exchange.webservices.data.sync.FolderChange;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MailRequests extends EwsBaseRequest implements EwsUtil {
+public class MailRequests extends EwsBaseRequest {
 
     public MailRequests(ExchangeService ewsClientCache){ 
         ewsClient = ewsClientCache;

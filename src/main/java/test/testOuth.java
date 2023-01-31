@@ -72,7 +72,7 @@ public class testOuth {
         organizationAuthParameters.put("region", "100");
 
         EwsBaseRequest ewsBaseRequest = new EwsBaseRequest(organizationAuthParameters);
-        ewsBaseRequest.setEwsClient("mailbox");
+        ewsBaseRequest.setEwsClient(mailbox);
 
         return ewsBaseRequest.getEwsClient();
     }

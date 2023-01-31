@@ -22,6 +22,8 @@ public class GraphBaseRequest extends BaseRequest {
 
     protected GraphServiceClient<Request> graphClient;
 
+    protected String backupUserId;
+
     public GraphBaseRequest(){
 
     }

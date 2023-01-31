@@ -4,6 +4,7 @@ import apis.ews.EwsBaseRequest;
 import apis.ews.FolderRequests;
 import apis.graph.GraphBaseRequest;
 import apis.graph.common.UserRequests;
+import apis.graph.exchange.MailRequests;
 import apis.soap.SoapBaseRequest;
 import com.microsoft.graph.requests.GraphServiceClient;
 import microsoft.exchange.webservices.data.core.ExchangeService;
@@ -22,7 +23,7 @@ public class testExchangeOnlineApis {
 
         String mailbox = "yunqi@s22fb.onmicrosoft.com";
         initClient(mailbox);
-        System.out.printf(syncGetUserInfo());
+        System.out.printf(syncGetMailChildFolder("AQMkAGI1ZmRjZWUAZC0yZTVlLTQyMzctYTc4Ni0yYjE3NDMxMjdhOGYALgAAAy5x2W1SrcBDvroL1Asx4J8BAKuvciembiNLk9i11WPD/4EAAAIBDAAAAA==", "yunqi@s22fb.onmicrosoft.com", "", "b9658zLYx7ag_WbFCK2mQmkD6gW_WZfaT5ESbsh64B-Xu3Z3GywTbe3e26M6XMr7u_Z4tUjVftHeS6RaseO_EdQZ4WyDuqGE2bn1Q7CXkx6AgY0wO7Imtf_hpuI2wM97EEAvgTiTsKO4AmYq9JfX-aiRheqiJq14LARMohc92HWKtS_ed2cfNjJwy243GNN0rThzoODCtpkexgbp4smurQ.rYWOUYpbntYwJJ7rV1Pv5EEn9CwHrgrnIVYcRSZ3yEY"));
     }
 
 
@@ -48,6 +49,19 @@ public class testExchangeOnlineApis {
 
 
     /**
+     * 增量获取用户组
+     * @return
+     */
+    public static String syncGetGroupInfo(){
+        String skipToken = "";
+        String userDeltaToken = "";
+        UserRequests userRequests = new UserRequests(graphClient);
+
+        return userRequests.syncGroupInfo(userDeltaToken, skipToken);
+    }
+
+
+    /**
      * 获取所有的顶级目录
      * @return
      * @throws Exception
@@ -55,6 +69,34 @@ public class testExchangeOnlineApis {
     public static String getAllTypeRootFolder() throws Exception {
         FolderRequests folderRequests = new FolderRequests(ewsClient);
         return folderRequests.getAllTypeRootFolder();
+    }
+
+
+    /**
+     * 增量获取子目录
+     * @param rootFolderId
+     * @param userId
+     * @param deltaLink
+     * @param skipToken
+     * @return
+     * @throws Exception
+     */
+    public static String syncGetMailChildFolder(String rootFolderId, String userId, String deltaLink, String skipToken) throws Exception {
+        MailRequests mailRequests = new MailRequests(graphClient, userId);
+        return mailRequests.syncGetMailFolder(rootFolderId, deltaLink, skipToken);
+    }
+
+
+    /**
+     * 普通获取子目录
+     * @param rootFolderId
+     * @param userId
+     * @return
+     * @throws Exception
+     */
+    public static String getMailChildFolder(String rootFolderId, String userId) throws Exception {
+        MailRequests mailRequests = new MailRequests(graphClient, userId);
+        return mailRequests.getMailChildFolder(rootFolderId);
     }
 
 

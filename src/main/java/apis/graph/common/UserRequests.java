@@ -2,8 +2,10 @@ package apis.graph.common;
 
 import apis.graph.GraphBaseRequest;
 import com.alibaba.fastjson.JSONObject;
+import com.microsoft.graph.models.Group;
 import com.microsoft.graph.models.User;
 import com.microsoft.graph.requests.GraphServiceClient;
+import com.microsoft.graph.requests.GroupDeltaCollectionPage;
 import com.microsoft.graph.requests.UserDeltaCollectionPage;
 import okhttp3.Request;
 
@@ -78,5 +80,69 @@ public class UserRequests extends GraphBaseRequest {
         syncUserInfoJson = syncUserInfoJsonObject.toString();
 
         return syncUserInfoJson;
+    }
+
+
+    public String syncGroupInfo(String deltaLink, String skipToken){
+        String syncGroupInfoJson = "";
+        List<JSONObject> groupInfoList = new ArrayList<>();
+
+        GroupDeltaCollectionPage groupDeltaCollectionPage;
+
+        if(Objects.equals(deltaLink, "")){
+            if (!Objects.equals(skipToken, "")){
+                groupDeltaCollectionPage = graphClient.groups()
+                        .delta()
+                        .buildRequest()
+                        .skipToken(skipToken)
+                        .get();
+            } else {
+                groupDeltaCollectionPage = graphClient.groups()
+                        .delta()
+                        .buildRequest()
+                        .get();
+            }
+        } else {
+            groupDeltaCollectionPage = graphClient.groups()
+                    .delta()
+                    .buildRequest()
+                    .deltaLink(deltaLink)
+                    .get();
+        }
+        int size = groupDeltaCollectionPage.getCurrentPage().size();
+
+        if(size > 0){
+            for (int i = 0; i < size; i++){
+                Group group = groupDeltaCollectionPage.getCurrentPage().get(i);
+                if (group.mail == null || group.displayName == null){
+                    continue;
+                }
+                JSONObject oneGroupInfo = new JSONObject();
+
+                oneGroupInfo.put("user_uuid", group.id);
+                oneGroupInfo.put("display_name", group.displayName);
+                oneGroupInfo.put("mail", group.mail);
+                groupInfoList.add(oneGroupInfo);
+            }
+        }
+
+        JSONObject syncUserInfoJsonObject = new JSONObject();
+
+        String newSkipToken = "";
+        if (groupDeltaCollectionPage.deltaLink() == null){
+            String nextPageUrl = groupDeltaCollectionPage.getNextPage().getRequestUrl();
+            String[] splitNextPageUrl = nextPageUrl.split("\\?");
+            newSkipToken = splitNextPageUrl[1].replace("$skiptoken=", "");
+            syncUserInfoJsonObject.put("user_delta_token", "");
+        } else {
+            syncUserInfoJsonObject.put("user_delta_token", groupDeltaCollectionPage.deltaLink());
+        }
+
+        syncUserInfoJsonObject.put("sync_user_list", groupInfoList);
+        syncUserInfoJsonObject.put("user_skip_token", newSkipToken);
+
+        syncGroupInfoJson = syncUserInfoJsonObject.toString();
+
+        return syncGroupInfoJson;
     }
 }
