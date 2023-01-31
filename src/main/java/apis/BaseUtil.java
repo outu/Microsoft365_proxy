@@ -1,5 +1,7 @@
 package apis;
 
+import microsoft.exchange.webservices.data.core.service.item.Appointment;
+
 public class BaseUtil {
     public enum ApiTypeEnum {
         EWSAPI(0),
@@ -46,6 +48,34 @@ public class BaseUtil {
             for(RegionEnum regionEnum : RegionEnum.values()){
                 if(regionEnum.getCode() == region){
                     return regionEnum;
+                }
+            }
+
+            return null;
+        }
+    }
+
+
+    public enum ExchDataType{
+        MESSAGE(0),
+        CALENDAR(1),
+        CONTACT(2),
+        TASK(3);
+
+        private int type = 0;
+
+        private ExchDataType(int value){
+            type = value;
+        }
+
+        private int getCode(){
+            return type;
+        }
+
+        public static ExchDataType getExchDataType(int type){
+            for (ExchDataType exchDataType : ExchDataType.values()){
+                if (exchDataType.getCode() == type){
+                    return exchDataType;
                 }
             }
 

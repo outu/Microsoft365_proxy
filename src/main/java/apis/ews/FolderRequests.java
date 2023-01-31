@@ -1,5 +1,6 @@
 package apis.ews;
 
+import apis.BaseUtil;
 import com.alibaba.fastjson.JSONObject;
 import microsoft.exchange.webservices.data.core.ExchangeService;
 import microsoft.exchange.webservices.data.core.enumeration.property.WellKnownFolderName;
@@ -29,15 +30,48 @@ public class FolderRequests extends EwsBaseRequest{
         FindFoldersResults findFolderResults = folder.findFolders(new FolderView(EwsUtil.MAX_ROOT_FOLDER_COUNT));
 
         for (Folder item : findFolderResults.getFolders()){
+            int type = getRootFolderType(item.getFolderClass());
+            if (type == -1){
+                continue;
+            }
             JSONObject oneRootMailFolder = new JSONObject();
             oneRootMailFolder.put("folder_id", item.getId().getUniqueId());
             oneRootMailFolder.put("parent_folder_id", item.getParentFolderId().getUniqueId());
             oneRootMailFolder.put("display_name", item.getDisplayName());
+            oneRootMailFolder.put("type", type);
             rootMailFolderListObject.add(oneRootMailFolder);
         }
 
         rootMailFolderJson = rootMailFolderListObject.toString();
 
         return rootMailFolderJson;
+    }
+
+
+    public int getRootFolderType(String rootFolderType){
+        int type;
+
+        if (rootFolderType == null){
+            return -1;
+        }
+
+        switch (rootFolderType){
+            case "IPF.Note":
+                type = 0;
+                break;
+            case "IPF.Appointment":
+                type = 1;
+                break;
+            case "IPF.Contact":
+                type = 2;
+                break;
+            case "IPF.Task":
+                type = 3;
+                break;
+            default:
+                type = -1;
+        }
+
+        return type;
     }
 }

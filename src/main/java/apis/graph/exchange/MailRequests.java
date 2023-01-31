@@ -210,14 +210,14 @@ public class MailRequests extends GraphBaseRequest {
 
                 JSONObject mailFolderInfo = new JSONObject();
 
-                mailFolderInfo.put("mail_id", message.id);
+                mailFolderInfo.put("message_id", message.id);
                 mailFolderInfo.put("parent_folder_id", message.parentFolderId);
                 mailFolderInfo.put("subject", message.subject);
-                mailFolderInfo.put("mail_body", message.body.content);
+                mailFolderInfo.put("body", message.body.content);
                 mailFolderInfo.put("recv_date", message.receivedDateTime);
-                mailFolderInfo.put("mail_recipents", getEmailAddressFromList(message.toRecipients));
-                mailFolderInfo.put("mail_sender", message.sender.emailAddress.address);
-                mailFolderInfo.put("mail_cc", getEmailAddressFromList(message.ccRecipients));
+                mailFolderInfo.put("recipents", getEmailAddressFromList(message.toRecipients));
+                mailFolderInfo.put("sender", message.sender.emailAddress.address);
+                mailFolderInfo.put("cc", getEmailAddressFromList(message.ccRecipients));
 
                 mailIndexInfoList.add(mailFolderInfo);
             }

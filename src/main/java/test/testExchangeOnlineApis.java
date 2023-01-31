@@ -23,7 +23,7 @@ public class testExchangeOnlineApis {
 
         String mailbox = "yunqi@s22fb.onmicrosoft.com";
         initClient(mailbox);
-        System.out.printf("%s", syncGetMailIndexInfo("AQMkAGI1ZmRjZWUAZC0yZTVlLTQyMzctYTc4Ni0yYjE3NDMxMjdhOGYALgAAAy5x2W1SrcBDvroL1Asx4J8BAKuvciembiNLk9i11WPD-4EAAAIBCQAAAA==", "yunqi@s22fb.onmicrosoft.com", "", ""));
+        System.out.printf("%s", getAllTypeRootFolder());
     }
 
 
