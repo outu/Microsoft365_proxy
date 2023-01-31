@@ -23,7 +23,7 @@ public class testExchangeOnlineApis {
 
         String mailbox = "yunqi@s22fb.onmicrosoft.com";
         initClient(mailbox);
-        System.out.printf(syncGetMailChildFolder("AQMkAGI1ZmRjZWUAZC0yZTVlLTQyMzctYTc4Ni0yYjE3NDMxMjdhOGYALgAAAy5x2W1SrcBDvroL1Asx4J8BAKuvciembiNLk9i11WPD/4EAAAIBDAAAAA==", "yunqi@s22fb.onmicrosoft.com", "", "b9658zLYx7ag_WbFCK2mQmkD6gW_WZfaT5ESbsh64B-Xu3Z3GywTbe3e26M6XMr7u_Z4tUjVftHeS6RaseO_EdQZ4WyDuqGE2bn1Q7CXkx6AgY0wO7Imtf_hpuI2wM97EEAvgTiTsKO4AmYq9JfX-aiRheqiJq14LARMohc92HWKtS_ed2cfNjJwy243GNN0rThzoODCtpkexgbp4smurQ.rYWOUYpbntYwJJ7rV1Pv5EEn9CwHrgrnIVYcRSZ3yEY"));
+        System.out.printf("%s", syncGetMailIndexInfo("AQMkAGI1ZmRjZWUAZC0yZTVlLTQyMzctYTc4Ni0yYjE3NDMxMjdhOGYALgAAAy5x2W1SrcBDvroL1Asx4J8BAKuvciembiNLk9i11WPD-4EAAAIBCQAAAA==", "yunqi@s22fb.onmicrosoft.com", "", ""));
     }
 
 
@@ -97,6 +97,12 @@ public class testExchangeOnlineApis {
     public static String getMailChildFolder(String rootFolderId, String userId) throws Exception {
         MailRequests mailRequests = new MailRequests(graphClient, userId);
         return mailRequests.getMailChildFolder(rootFolderId);
+    }
+
+
+    public static String syncGetMailIndexInfo(String folderId, String userId, String deltaLink, String skipToken){
+        MailRequests mailRequests = new MailRequests(graphClient, userId);
+        return mailRequests.syncGetMailIndexInfo(folderId, deltaLink, skipToken, 10);
     }
 
 

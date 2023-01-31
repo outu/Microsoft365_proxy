@@ -2,14 +2,14 @@ package apis.graph.exchange;
 
 import apis.graph.GraphBaseRequest;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.JSON;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.microsoft.graph.models.MailFolder;
+import com.microsoft.graph.models.Message;
+import com.microsoft.graph.models.Recipient;
 import com.microsoft.graph.models.User;
-import com.microsoft.graph.requests.GraphServiceClient;
-import com.microsoft.graph.requests.MailFolderCollectionPage;
-import com.microsoft.graph.requests.MailFolderDeltaCollectionPage;
-import com.microsoft.graph.requests.UserDeltaCollectionPage;
+import com.microsoft.graph.requests.*;
 import microsoft.exchange.webservices.data.core.PropertySet;
 import microsoft.exchange.webservices.data.core.enumeration.property.WellKnownFolderName;
 import microsoft.exchange.webservices.data.core.request.SyncFolderHierarchyRequest;
@@ -170,6 +170,91 @@ public class MailRequests extends GraphBaseRequest {
         syncMailChildFolderJson = syncMailFolderInfoJsonObject.toString();
 
         return syncMailChildFolderJson;
+    }
+
+
+    public String syncGetMailIndexInfo(String folderId, String deltaLink, String skipToken, int count){
+        String syncMailIndexInfoJson = "";
+        List<JSONObject> mailIndexInfoList = new ArrayList<>();
+        MessageDeltaCollectionPage messageDeltaCollectionPage;
+
+        folderId = GraphUtil.graphIdConvertToEwsId(folderId);
+        if(Objects.equals(deltaLink, "")){
+            if (!Objects.equals(skipToken, "")){
+                messageDeltaCollectionPage = graphClient.users(backupUserId).mailFolders(folderId).messages()
+                        .delta()
+                        .buildRequest()
+                        .select("id,parentFolderId,subject,body,receivedDateTime,toRecipients,sender,ccRecipients")
+                        .skipToken(skipToken)
+                        .get();
+            } else {
+                messageDeltaCollectionPage = graphClient.users(backupUserId).mailFolders(folderId).messages()
+                        .delta()
+                        .buildRequest()
+                        .select("id,parentFolderId,subject,body,receivedDateTime,toRecipients,sender,ccRecipients")
+                        .get();
+            }
+        } else {
+            messageDeltaCollectionPage = graphClient.users(backupUserId).mailFolders(folderId).messages()
+                    .delta()
+                    .buildRequest()
+                    .select("id,parentFolderId,subject,body,receivedDateTime,toRecipients,sender,ccRecipients")
+                    .deltaLink(deltaLink)
+                    .get();
+        }
+        int size = messageDeltaCollectionPage.getCurrentPage().size();
+
+        if(size > 0){
+            for (int i = 0; i < size; i++){
+                Message message = messageDeltaCollectionPage.getCurrentPage().get(i);
+
+                JSONObject mailFolderInfo = new JSONObject();
+
+                mailFolderInfo.put("mail_id", message.id);
+                mailFolderInfo.put("parent_folder_id", message.parentFolderId);
+                mailFolderInfo.put("subject", message.subject);
+                mailFolderInfo.put("mail_body", message.body.content);
+                mailFolderInfo.put("recv_date", message.receivedDateTime);
+                mailFolderInfo.put("mail_recipents", getEmailAddressFromList(message.toRecipients));
+                mailFolderInfo.put("mail_sender", message.sender.emailAddress.address);
+                mailFolderInfo.put("mail_cc", getEmailAddressFromList(message.ccRecipients));
+
+                mailIndexInfoList.add(mailFolderInfo);
+            }
+        }
+
+        JSONObject syncMailIndexInfoJsonObject = new JSONObject();
+
+        String newSkipToken = "";
+        if (messageDeltaCollectionPage.deltaLink() == null){
+            String nextPageUrl = messageDeltaCollectionPage.getNextPage().getRequestUrl();
+            String[] splitNextPageUrl = nextPageUrl.split("\\?");
+            newSkipToken = splitNextPageUrl[1].replace("$skiptoken=", "");
+            syncMailIndexInfoJsonObject.put("mail_index_delta_token", "");
+        } else {
+            syncMailIndexInfoJsonObject.put("mail_index_delta_token", messageDeltaCollectionPage.deltaLink());
+        }
+
+        syncMailIndexInfoJsonObject.put("sync_mail_index_list", mailIndexInfoList);
+        syncMailIndexInfoJsonObject.put("mail_index_skip_token", newSkipToken);
+
+        syncMailIndexInfoJson = syncMailIndexInfoJsonObject.toString();
+
+        return syncMailIndexInfoJson;
+    }
+
+
+    private String getEmailAddressFromList(List<Recipient> emailAddressList){
+        if (emailAddressList.size() == 0){
+            return "";
+        }
+        List<String> emailAddressValidDataList = new ArrayList<>();
+
+        for (int i=0; i < emailAddressList.size(); i++){
+            emailAddressValidDataList.add(emailAddressList.get(i).emailAddress.address);
+        }
+
+        return emailAddressValidDataList.toString();
     }
 
 
