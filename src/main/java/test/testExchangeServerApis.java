@@ -5,6 +5,7 @@ import apis.ews.MessageRequests;
 import apis.powershell.PowershellExchangeOperation;
 import microsoft.exchange.webservices.data.core.ExchangeService;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -14,10 +15,47 @@ public class testExchangeServerApis {
     private static ExchangeService ewsClient;
     private static PowershellExchangeOperation powershellClient;
 
+    private static byte[] mimecontentCache;
+
     public static void main(String[] args) throws Exception {
         String mailbox = "Administrator@exch.com.cn";
         initClient(mailbox);
-        System.out.printf(syncGetMessageInfo("AAMkAGE5NzcxZjBiLWI0Y2MtNDhlNy1hZjViLTQ0NzZiMmQzN2Q1ZAAuAAAAAACC2Y8PhSFoQo3NQPbM2L49AQBcaT0SLAv6S6PqbrxnTa5XAAAAAAEMAAA=", 10, "H4sIAAAAAAAEAGNgYGcAAotqE0tHE2NTA0ddZ3NHC10TR2djXSdnJ2ddNyMnC2cnczdLU1OD2vBgveDKvOTgksSSVOfEvMSiSgYr0nW65eekpBZ5pjBYkq43LLWoODM/j8GaaK3+QMuKS4JSk1Mzy1JTQjJzU0nwrU9icYlnXnFJYl5yqncqKb71zS9K9SxJzS32zwtOLSpLLSLByXDfhgNxUW5iUTYklrgYGISA0tDwAxkOUskgCJQyAGI9kJqmm/38rYoZTr1nHb6dubHPlpEhJtNWSIf7l/fiV3l70n3XhYNUMfIAMQMfAzOIw80gUOAse4P5tgeDEFCUF4iB1v0Dyvg6Bnj6OvqBFDG4mbqFgZWjgTYglkPiLwFiCSzq9gCxGRIf3VlMDAxBIJfpT53gG8BwL4R9t1o9h+9k/X9Vc5V+7GUD68H0TBBUnAGoLQBDFqhLv+e/HV5dvjjtSmNgaAAAqDX1ryADAAA="));
+        int size,nextSize= 0;
+        int num = getMimeContentInfo("AAMkAGE5NzcxZjBiLWI0Y2MtNDhlNy1hZjViLTQ0NzZiMmQzN2Q1ZABGAAAAAACC2Y8PhSFoQo3NQPbM2L49BwBcaT0SLAv6S6PqbrxnTa5XAAAAAAEMAABcaT0SLAv6S6PqbrxnTa5XAABu5XMDAAA=");
+        System.out.printf(String.valueOf(num));
+        if (num > 1024){
+            size = 1024;
+            nextSize = num - 1024;
+        } else {
+            size = num;
+        }
+        byte[] read = new byte[size];
+        ByteArrayInputStream in = new ByteArrayInputStream(mimecontentCache);
+        in.read(read);
+        System.out.printf(new String(read));
+        byte[] read1 = new byte[nextSize];
+        in.read(read1);
+        System.out.printf(new String(read1));
+    }
+
+
+    private void test() throws IOException {
+        int size,nextSize= 0;
+        int num = 1024;
+
+        if (num > 1024){
+            size = 1024;
+            nextSize = num - 1024;
+        } else {
+            size = num;
+        }
+        byte[] read = new byte[size];
+        ByteArrayInputStream in = new ByteArrayInputStream(mimecontentCache);
+        in.read(read);
+        System.out.printf(new String(read));
+        byte[] read1 = new byte[nextSize];
+        in.read(read1);
+        System.out.printf(new String(read1));
     }
 
 
@@ -61,8 +99,36 @@ public class testExchangeServerApis {
     }
 
 
+    /**
+     * 增量获取邮件
+     * @param folderId
+     * @param count
+     * @param messageDeltaToken
+     * @return
+     * @throws Exception
+     */
     public static String syncGetMessageInfo(String folderId, int count, String messageDeltaToken) throws Exception {
         MessageRequests messageRequests = new MessageRequests(ewsClient);
         return messageRequests.syncGetMessageInfo(folderId, count, messageDeltaToken);
+    }
+
+
+    /**
+     * 获取Exchange Online邮件详细信息，Graph API获取不全
+     * @param messageId
+     * @return
+     * @throws Exception
+     */
+    public static String getMessageDetailInfo(String messageId) throws Exception {
+        MessageRequests messageRequests = new MessageRequests(ewsClient);
+        return messageRequests.getMessageDetailInfo(messageId);
+    }
+
+
+    public static int getMimeContentInfo(String messageId) throws Exception {
+        MessageRequests messageRequests = new MessageRequests(ewsClient);
+        mimecontentCache = messageRequests.getMimeContent(messageId);
+
+        return mimecontentCache.length;
     }
 }

@@ -13,10 +13,7 @@ import microsoft.exchange.webservices.data.core.request.SyncFolderItemsRequest;
 import microsoft.exchange.webservices.data.core.service.item.EmailMessage;
 import microsoft.exchange.webservices.data.core.service.item.Item;
 import microsoft.exchange.webservices.data.core.service.schema.ItemSchema;
-import microsoft.exchange.webservices.data.property.complex.EmailAddress;
-import microsoft.exchange.webservices.data.property.complex.EmailAddressCollection;
-import microsoft.exchange.webservices.data.property.complex.FolderId;
-import microsoft.exchange.webservices.data.property.complex.ItemId;
+import microsoft.exchange.webservices.data.property.complex.*;
 import microsoft.exchange.webservices.data.sync.ChangeCollection;
 import microsoft.exchange.webservices.data.sync.FolderChange;
 import microsoft.exchange.webservices.data.sync.ItemChange;
@@ -32,20 +29,13 @@ public class MessageRequests extends EwsBaseRequest {
 
 
     public byte[] getMimeContent(String mailId) throws Exception {
-        mailId = mailId.replace("-", "/");
-        mailId = mailId.replace("_", "+");
+        ItemId itemId = new ItemId(mailId);
+        PropertySet propSet = new PropertySet(BasePropertySet.FirstClassProperties);
+        propSet.add(ItemSchema.MimeContent);
 
-        try {
-            ItemId itemId = new ItemId(mailId);
-            PropertySet propSet = new PropertySet(BasePropertySet.FirstClassProperties);
-            propSet.add(ItemSchema.MimeContent);
+        EmailMessage message = EmailMessage.bind(ewsClient, itemId, propSet);
 
-            EmailMessage message = EmailMessage.bind(ewsClient, itemId, propSet);
-
-            return message.getMimeContent().getContent();
-        } catch (Exception e){
-            throw new Exception(e);
-        }
+        return message.getMimeContent().getContent();
     }
 
 
@@ -118,6 +108,9 @@ public class MessageRequests extends EwsBaseRequest {
             messageInfo.put("recipents", getEmailAddressFromCollection(message.getToRecipients()));
             messageInfo.put("sender", message.getSender().getAddress());
             messageInfo.put("cc", getEmailAddressFromCollection(message.getCcRecipients()));
+            messageInfo.put("change_type", itemChange.getChangeType().toString());
+            messageInfo.put("size", message.getSize());
+            messageInfo.put("attachments", getAttachmentNameFromCollection(message.getAttachments()));
 
             messageInfoList.add(messageInfo);
         }
@@ -133,6 +126,20 @@ public class MessageRequests extends EwsBaseRequest {
     }
 
 
+    public String getMessageDetailInfo(String messageId) throws Exception {
+        JSONObject messageDetailInfo = new JSONObject();
+
+        ItemId itemId = new ItemId(messageId);
+        PropertySet propSet = new PropertySet(BasePropertySet.FirstClassProperties);
+
+        EmailMessage message = EmailMessage.bind(ewsClient, itemId, propSet);
+        messageDetailInfo.put("size", message.getSize());
+        messageDetailInfo.put("attachments", getAttachmentNameFromCollection(message.getAttachments()));
+
+        return messageDetailInfo.toJSONString();
+    }
+
+
     private String getEmailAddressFromCollection(EmailAddressCollection emailAddressCollection){
         if (emailAddressCollection.getCount() == 0){
             return "";
@@ -145,6 +152,21 @@ public class MessageRequests extends EwsBaseRequest {
         }
 
         return emailAddressValidDataList.toString();
+    }
+
+
+    private String getAttachmentNameFromCollection(AttachmentCollection attachmentCollection){
+        if (attachmentCollection.getCount() == 0){
+            return "";
+        }
+        List<String> attachmentNameList = new ArrayList<>();
+        List<Attachment> attachmentList = attachmentCollection.getItems();
+
+        for (int i=0; i<attachmentList.size(); i++){
+            attachmentNameList.add(attachmentList.get(i).getName());
+        }
+
+        return attachmentNameList.toString();
     }
 
 
