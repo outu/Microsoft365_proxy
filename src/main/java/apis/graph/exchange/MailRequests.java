@@ -9,6 +9,8 @@ import com.microsoft.graph.models.MailFolder;
 import com.microsoft.graph.models.Message;
 import com.microsoft.graph.models.Recipient;
 import com.microsoft.graph.models.User;
+import com.microsoft.graph.options.HeaderOption;
+import com.microsoft.graph.options.Option;
 import com.microsoft.graph.requests.*;
 import microsoft.exchange.webservices.data.core.PropertySet;
 import microsoft.exchange.webservices.data.core.enumeration.property.WellKnownFolderName;
@@ -22,6 +24,7 @@ import microsoft.exchange.webservices.data.sync.FolderChange;
 import okhttp3.Request;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
@@ -173,31 +176,41 @@ public class MailRequests extends GraphBaseRequest {
     }
 
 
+    /**
+     * 增量获取邮件索引信息
+     * @param folderId
+     * @param deltaLink
+     * @param skipToken
+     * @param count
+     * @return
+     */
     public String syncGetMailIndexInfo(String folderId, String deltaLink, String skipToken, int count){
         String syncMailIndexInfoJson = "";
         List<JSONObject> mailIndexInfoList = new ArrayList<>();
         MessageDeltaCollectionPage messageDeltaCollectionPage;
 
         folderId = GraphUtil.graphIdConvertToEwsId(folderId);
+        LinkedList<Option> requestOptions = new LinkedList<Option>();
+        requestOptions.add(new HeaderOption("Prefer", "outlook.body-content-type=\"text\""));
         if(Objects.equals(deltaLink, "")){
             if (!Objects.equals(skipToken, "")){
                 messageDeltaCollectionPage = graphClient.users(backupUserId).mailFolders(folderId).messages()
                         .delta()
-                        .buildRequest()
+                        .buildRequest(requestOptions)
                         .select("id,parentFolderId,subject,body,receivedDateTime,toRecipients,sender,ccRecipients")
                         .skipToken(skipToken)
                         .get();
             } else {
                 messageDeltaCollectionPage = graphClient.users(backupUserId).mailFolders(folderId).messages()
                         .delta()
-                        .buildRequest()
+                        .buildRequest(requestOptions)
                         .select("id,parentFolderId,subject,body,receivedDateTime,toRecipients,sender,ccRecipients")
                         .get();
             }
         } else {
             messageDeltaCollectionPage = graphClient.users(backupUserId).mailFolders(folderId).messages()
                     .delta()
-                    .buildRequest()
+                    .buildRequest(requestOptions)
                     .select("id,parentFolderId,subject,body,receivedDateTime,toRecipients,sender,ccRecipients")
                     .deltaLink(deltaLink)
                     .get();
@@ -213,7 +226,7 @@ public class MailRequests extends GraphBaseRequest {
                 mailFolderInfo.put("message_id", message.id);
                 mailFolderInfo.put("parent_folder_id", message.parentFolderId);
                 mailFolderInfo.put("subject", message.subject);
-                mailFolderInfo.put("body", message.body.content);
+                mailFolderInfo.put("body", message.body.content.replace("\r\n", ""));
                 mailFolderInfo.put("recv_date", message.receivedDateTime);
                 mailFolderInfo.put("recipents", getEmailAddressFromList(message.toRecipients));
                 mailFolderInfo.put("sender", message.sender.emailAddress.address);
