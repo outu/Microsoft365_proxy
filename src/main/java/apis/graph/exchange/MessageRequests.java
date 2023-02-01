@@ -239,6 +239,7 @@ public class MessageRequests extends GraphBaseRequest {
 
         syncMessageInfoJsonObject.put("sync_message_info_list", messageInfoList);
         syncMessageInfoJsonObject.put("message_info_skip_token", newSkipToken);
+        syncMessageInfoJsonObject.put("is_finished", messageDeltaCollectionPage.deltaLink() == null ? "0" : "1");
 
         syncMessageInfoJson = syncMessageInfoJsonObject.toString();
 

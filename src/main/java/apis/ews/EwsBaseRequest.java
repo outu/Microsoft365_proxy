@@ -50,7 +50,7 @@ public class EwsBaseRequest extends BaseRequest {
     {
         try {
             if (BaseUtil.RegionEnum.getRegionEnumByRegion(region) == LOCAL){
-                ExchangeService service = new ExchangeService(ExchangeVersion.Exchange2007_SP1);
+                ExchangeService service = new ExchangeService(ExchangeVersion.Exchange2010);
                 String username = authParameters.get("username");
                 String password = authParameters.get("password");
                 ExchangeCredentials credentials = new WebCredentials(username, password);
