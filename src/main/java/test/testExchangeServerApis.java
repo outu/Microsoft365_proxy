@@ -1,11 +1,8 @@
 package test;
 
-import apis.ews.EwsBaseRequest;
 import apis.ews.FolderRequests;
-import apis.ews.MailRequests;
-import apis.graph.GraphBaseRequest;
+import apis.ews.MessageRequests;
 import apis.powershell.PowershellExchangeOperation;
-import apis.soap.SoapBaseRequest;
 import microsoft.exchange.webservices.data.core.ExchangeService;
 
 import java.io.IOException;
@@ -61,7 +58,7 @@ public class testExchangeServerApis {
     public static String syncGetMailFolder() throws Exception {
         String folder_delta_token = "";
         String mailId = "";
-        MailRequests mailRequests = new MailRequests(ewsClient);
-        return mailRequests.syncGetMailFolder(mailId, folder_delta_token);
+        MessageRequests messageRequests = new MessageRequests(ewsClient);
+        return messageRequests.syncGetMailFolder(mailId, folder_delta_token);
     }
 }

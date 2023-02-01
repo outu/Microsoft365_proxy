@@ -1,16 +1,12 @@
 package test;
 
-import apis.ews.EwsBaseRequest;
 import apis.ews.FolderRequests;
-import apis.graph.GraphBaseRequest;
 import apis.graph.common.UserRequests;
-import apis.graph.exchange.MailRequests;
-import apis.soap.SoapBaseRequest;
+import apis.graph.exchange.MessageRequests;
 import com.microsoft.graph.requests.GraphServiceClient;
 import microsoft.exchange.webservices.data.core.ExchangeService;
 import okhttp3.Request;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -23,7 +19,7 @@ public class testExchangeOnlineApis {
 
         String mailbox = "yunqi@s22fb.onmicrosoft.com";
         initClient(mailbox);
-        System.out.printf("%s", syncGetMailIndexInfo("AQMkAGI1ZmRjZWUAZC0yZTVlLTQyMzctYTc4Ni0yYjE3NDMxMjdhOGYALgAAAy5x2W1SrcBDvroL1Asx4J8BAKuvciembiNLk9i11WPD-4EAAAIBDAAAAA==","yunqi@s22fb.onmicrosoft.com","",""));
+        System.out.printf("%s", syncGetMessageInfo("AQMkAGI1ZmRjZWUAZC0yZTVlLTQyMzctYTc4Ni0yYjE3NDMxMjdhOGYALgAAAy5x2W1SrcBDvroL1Asx4J8BAKuvciembiNLk9i11WPD-4EAAAIBDAAAAA==","yunqi@s22fb.onmicrosoft.com","",""));
     }
 
 
@@ -82,8 +78,8 @@ public class testExchangeOnlineApis {
      * @throws Exception
      */
     public static String syncGetMailChildFolder(String rootFolderId, String userId, String deltaLink, String skipToken) throws Exception {
-        MailRequests mailRequests = new MailRequests(graphClient, userId);
-        return mailRequests.syncGetMailFolder(rootFolderId, deltaLink, skipToken);
+        MessageRequests messageRequests = new MessageRequests(graphClient, userId);
+        return messageRequests.syncGetMailFolder(rootFolderId, deltaLink, skipToken);
     }
 
 
@@ -95,14 +91,14 @@ public class testExchangeOnlineApis {
      * @throws Exception
      */
     public static String getMailChildFolder(String rootFolderId, String userId) throws Exception {
-        MailRequests mailRequests = new MailRequests(graphClient, userId);
-        return mailRequests.getMailChildFolder(rootFolderId);
+        MessageRequests messageRequests = new MessageRequests(graphClient, userId);
+        return messageRequests.getMailChildFolder(rootFolderId);
     }
 
 
-    public static String syncGetMailIndexInfo(String folderId, String userId, String deltaLink, String skipToken){
-        MailRequests mailRequests = new MailRequests(graphClient, userId);
-        return mailRequests.syncGetMailIndexInfo(folderId, deltaLink, skipToken, 10);
+    public static String syncGetMessageInfo(String folderId, String userId, String deltaLink, String skipToken){
+        MessageRequests messageRequests = new MessageRequests(graphClient, userId);
+        return messageRequests.syncGetMessageInfo(folderId, deltaLink, skipToken, 10);
     }
 
 

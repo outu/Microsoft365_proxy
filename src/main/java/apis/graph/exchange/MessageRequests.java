@@ -2,25 +2,14 @@ package apis.graph.exchange;
 
 import apis.graph.GraphBaseRequest;
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.JSON;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.microsoft.graph.models.MailFolder;
 import com.microsoft.graph.models.Message;
 import com.microsoft.graph.models.Recipient;
-import com.microsoft.graph.models.User;
 import com.microsoft.graph.options.HeaderOption;
 import com.microsoft.graph.options.Option;
 import com.microsoft.graph.requests.*;
-import microsoft.exchange.webservices.data.core.PropertySet;
-import microsoft.exchange.webservices.data.core.enumeration.property.WellKnownFolderName;
-import microsoft.exchange.webservices.data.core.request.SyncFolderHierarchyRequest;
-import microsoft.exchange.webservices.data.core.service.folder.Folder;
-import microsoft.exchange.webservices.data.property.complex.FolderId;
-import microsoft.exchange.webservices.data.search.FindFoldersResults;
-import microsoft.exchange.webservices.data.search.FolderView;
-import microsoft.exchange.webservices.data.sync.ChangeCollection;
-import microsoft.exchange.webservices.data.sync.FolderChange;
 import okhttp3.Request;
 
 import java.util.ArrayList;
@@ -28,8 +17,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
-public class MailRequests extends GraphBaseRequest {
-    public MailRequests(GraphServiceClient<Request> graphClientCache, String userId){
+public class MessageRequests extends GraphBaseRequest {
+    public MessageRequests(GraphServiceClient<Request> graphClientCache, String userId){
         graphClient = graphClientCache;
         backupUserId = userId;
     }
@@ -148,7 +137,7 @@ public class MailRequests extends GraphBaseRequest {
 
                 JSONObject mailFolderInfo = new JSONObject();
 
-                mailFolderInfo.put("mail_id", mailFolder.id);
+                mailFolderInfo.put("folder_id", mailFolder.id);
                 mailFolderInfo.put("display_name", mailFolder.displayName);
                 mailFolderInfo.put("parent_folder_id", mailFolder.parentFolderId);
                 mailChildFolderList.add(mailFolderInfo);
@@ -184,9 +173,9 @@ public class MailRequests extends GraphBaseRequest {
      * @param count
      * @return
      */
-    public String syncGetMailIndexInfo(String folderId, String deltaLink, String skipToken, int count){
-        String syncMailIndexInfoJson = "";
-        List<JSONObject> mailIndexInfoList = new ArrayList<>();
+    public String syncGetMessageInfo(String folderId, String deltaLink, String skipToken, int count){
+        String syncMessageInfoJson = "";
+        List<JSONObject> messageInfoList = new ArrayList<>();
         MessageDeltaCollectionPage messageDeltaCollectionPage;
 
         folderId = GraphUtil.graphIdConvertToEwsId(folderId);
@@ -221,39 +210,39 @@ public class MailRequests extends GraphBaseRequest {
             for (int i = 0; i < size; i++){
                 Message message = messageDeltaCollectionPage.getCurrentPage().get(i);
 
-                JSONObject mailFolderInfo = new JSONObject();
+                JSONObject messageInfo = new JSONObject();
 
-                mailFolderInfo.put("message_id", message.id);
-                mailFolderInfo.put("parent_folder_id", message.parentFolderId);
-                mailFolderInfo.put("subject", message.subject);
-                mailFolderInfo.put("body", message.body.content.replace("\r\n", ""));
-                mailFolderInfo.put("recv_date", message.receivedDateTime);
-                mailFolderInfo.put("recipents", getEmailAddressFromList(message.toRecipients));
-                mailFolderInfo.put("sender", message.sender.emailAddress.address);
-                mailFolderInfo.put("cc", getEmailAddressFromList(message.ccRecipients));
+                messageInfo.put("message_id", message.id);
+                messageInfo.put("parent_folder_id", message.parentFolderId);
+                messageInfo.put("subject", message.subject);
+                messageInfo.put("body", message.body.content.replace("\r\n", ""));
+                messageInfo.put("recv_date", message.receivedDateTime);
+                messageInfo.put("recipents", getEmailAddressFromList(message.toRecipients));
+                messageInfo.put("sender", message.sender.emailAddress.address);
+                messageInfo.put("cc", getEmailAddressFromList(message.ccRecipients));
 
-                mailIndexInfoList.add(mailFolderInfo);
+                messageInfoList.add(messageInfo);
             }
         }
 
-        JSONObject syncMailIndexInfoJsonObject = new JSONObject();
+        JSONObject syncMessageInfoJsonObject = new JSONObject();
 
         String newSkipToken = "";
         if (messageDeltaCollectionPage.deltaLink() == null){
             String nextPageUrl = messageDeltaCollectionPage.getNextPage().getRequestUrl();
             String[] splitNextPageUrl = nextPageUrl.split("\\?");
             newSkipToken = splitNextPageUrl[1].replace("$skiptoken=", "");
-            syncMailIndexInfoJsonObject.put("mail_index_delta_token", "");
+            syncMessageInfoJsonObject.put("message_info_delta_token", "");
         } else {
-            syncMailIndexInfoJsonObject.put("mail_index_delta_token", messageDeltaCollectionPage.deltaLink());
+            syncMessageInfoJsonObject.put("message_info_delta_token", messageDeltaCollectionPage.deltaLink());
         }
 
-        syncMailIndexInfoJsonObject.put("sync_mail_index_list", mailIndexInfoList);
-        syncMailIndexInfoJsonObject.put("mail_index_skip_token", newSkipToken);
+        syncMessageInfoJsonObject.put("sync_message_info_list", messageInfoList);
+        syncMessageInfoJsonObject.put("message_info_skip_token", newSkipToken);
 
-        syncMailIndexInfoJson = syncMailIndexInfoJsonObject.toString();
+        syncMessageInfoJson = syncMessageInfoJsonObject.toString();
 
-        return syncMailIndexInfoJson;
+        return syncMessageInfoJson;
     }
 
 

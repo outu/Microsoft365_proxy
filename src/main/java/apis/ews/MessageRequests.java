@@ -4,27 +4,20 @@ import com.alibaba.fastjson.JSONObject;
 import microsoft.exchange.webservices.data.core.ExchangeService;
 import microsoft.exchange.webservices.data.core.PropertySet;
 import microsoft.exchange.webservices.data.core.enumeration.property.BasePropertySet;
-import microsoft.exchange.webservices.data.core.enumeration.property.WellKnownFolderName;
-import microsoft.exchange.webservices.data.core.request.FindFolderRequest;
 import microsoft.exchange.webservices.data.core.request.SyncFolderHierarchyRequest;
-import microsoft.exchange.webservices.data.core.request.SyncFolderItemsRequest;
-import microsoft.exchange.webservices.data.core.service.folder.Folder;
 import microsoft.exchange.webservices.data.core.service.item.EmailMessage;
-import microsoft.exchange.webservices.data.core.service.item.Item;
 import microsoft.exchange.webservices.data.core.service.schema.ItemSchema;
 import microsoft.exchange.webservices.data.property.complex.FolderId;
 import microsoft.exchange.webservices.data.property.complex.ItemId;
-import microsoft.exchange.webservices.data.search.FindFoldersResults;
-import microsoft.exchange.webservices.data.search.FolderView;
 import microsoft.exchange.webservices.data.sync.ChangeCollection;
 import microsoft.exchange.webservices.data.sync.FolderChange;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MailRequests extends EwsBaseRequest {
+public class MessageRequests extends EwsBaseRequest {
 
-    public MailRequests(ExchangeService ewsClientCache){ 
+    public MessageRequests(ExchangeService ewsClientCache){
         ewsClient = ewsClientCache;
     }
 

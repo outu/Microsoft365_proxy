@@ -1,7 +1,7 @@
 package test;
 
 import apis.ews.EwsBaseRequest;
-import apis.ews.MailRequests;
+import apis.ews.MessageRequests;
 import apis.graph.GraphBaseRequest;
 import apis.graph.common.UserRequests;
 import apis.powershell.PowershellExchangeOperation;
@@ -214,7 +214,7 @@ public class testOuth {
         ewsBaseRequest.setEwsClient("yunqi@s22fb.onmicrosoft.com");
 
 
-        MailRequests mailRequests = new MailRequests(ewsBaseRequest.getEwsClient());
+        MessageRequests messageRequests = new MessageRequests(ewsBaseRequest.getEwsClient());
         //mailRequests.getMailRootFolder();
         //System.out.printf(mailRequests.getRootMailFolder());
        // mailRequests.getMimeContent("AAQkADE0ODViMDdkLWQ3MGItNDMyMi1hYzAyLWY0NDlhYTdjMjExMgMkABAAANMFII6LxUqBDnol2Q-6hBAAANMFII6LxUqBDnol2Q-6hA==");
@@ -235,8 +235,8 @@ public class testOuth {
 
         EwsBaseRequest ewsBaseRequest = new EwsBaseRequest(organizationAuthParameters);
         ewsBaseRequest.setEwsClient("Administrator@exch.com.cn");
-        MailRequests mailRequests = new MailRequests(ewsBaseRequest.getEwsClient());
-        mailRequests.syncGetMailFolder("AAMkAGE5NzcxZjBiLWI0Y2MtNDhlNy1hZjViLTQ0NzZiMmQzN2Q1ZAAuAAAAAACC2Y8PhSFoQo3NQPbM2L49AQBcaT0SLAv6S6PqbrxnTa5XAAAAAAEMAAA=", "");
+        MessageRequests messageRequests = new MessageRequests(ewsBaseRequest.getEwsClient());
+        messageRequests.syncGetMailFolder("AAMkAGE5NzcxZjBiLWI0Y2MtNDhlNy1hZjViLTQ0NzZiMmQzN2Q1ZAAuAAAAAACC2Y8PhSFoQo3NQPbM2L49AQBcaT0SLAv6S6PqbrxnTa5XAAAAAAEMAAA=", "");
 
         return ret;
     }
